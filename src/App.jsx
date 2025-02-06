@@ -1,5 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import { Seminar } from "./Seminar.jsx";
 
 // Функция для запроса данных о семинарах с сервера
 async function fetchSeminars() {
@@ -61,7 +62,7 @@ function App() {
   }, []); //указываем пустой массив зависимостей, чтобы запрос данных выполнялся только при первом рендере компонента
 
   const seminarsList = Array.isArray(seminars)
-    ? seminars.map((seminar) => <li key={seminar.id}>{seminar.title}</li>)
+    ? seminars.map((seminar) => <Seminar key={seminar.id} seminar={seminar} />)
     : null;
 
   return (

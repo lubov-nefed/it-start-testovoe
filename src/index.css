@@ -54,6 +54,41 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+ul {
+  list-style: none;
+}
+
+/* Seminar */
+.seminar-li {
+  margin: 16px 0;
+  padding: 0 16px;
+  text-align: left;
+  border: solid 1px #c6d3ff;
+  border-radius: 4px;
+}
+
+.seminar-title {
+  margin: 8px 0;
+}
+
+.seminar-date {
+  font-weight: 500;
+  margin-right: 16px;
+}
+
+.seminar-buttons-container {
+  margin: 16px 0;
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 16px;
+}
+
+.seminar-button {  
+  border: solid 1px #c6d3ff;
+}
+
+
+/* Media */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
