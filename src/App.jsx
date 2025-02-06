@@ -1,46 +1,64 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 
+// Функция для запроса данных о семинарах с сервера
 async function fetchSeminars() {
   try {
-    const response = await fetch("https://httpstat.us/500");
+    //Запрашиваем данные
+    const response = await fetch("/db.json");
+    //Если ответ получен, возвращаем данные
     if (response.ok) {
       const result = await response.json();
       return result.seminars;
+      //Если произошла ошибка пробрасываем ее дальше для отображения в консоли/на странице
     } else {
       throw Error(`Error. Response status code: ${response.status}`);
     }
   } catch (error) {
     if (!error) {
+      //Если ошибку отловить не удалось, то выбрасываем ошибку запроса данных
       throw Error("Data request error");
+      //Пробрасываем ошибку дальше,  для отображения ее в консоли/на странице
     } else throw error;
   }
 }
 
 function App() {
-  const [seminars, setSeminars] = useState(null); //loading, data, error
+  //Переменная seminars будет принимать значения: loading/data/error
+  // и либо отображать состояние (загрузка/ошибка), либо содержать данные, запрошенные с сервера
+  const [seminars, setSeminars] = useState(null);
 
+  //Используем useEffect для запроса данных
   useEffect(() => {
     let ignore = false;
 
+    //Устанавливаем состояние "загружается" для отображения на странице
     setSeminars("loading");
+    //Здесь добавим искуственную задержку чтобы видеть индикатор загрузки
+    //в процессе разработки, перед продакшеном нужно убрать
+    /* === */
+    //TODO: Убрать setTimeout перед продакшеном
+    /* === */
     setTimeout(() => {
       fetchSeminars()
         .then((data) => {
           if (!ignore) {
+            //При успешной загрузке помещаем в seminars данные, для отображения на странице
             setSeminars(data);
           }
         })
         .catch((error) => {
+          //При ошибке seminars получит состояние error
+          //Чтобы проинформировать пользователя, что произошла ошибка
           setSeminars("error");
           console.log(error);
         });
-    }, 2000);
+    }, 1500);
 
     return () => {
       ignore = true;
     };
-  }, []);
+  }, []); //указываем пустой массив зависимостей, чтобы запрос данных выполнялся только при первом рендере компонента
 
   const seminarsList = Array.isArray(seminars)
     ? seminars.map((seminar) => <li key={seminar.id}>{seminar.title}</li>)
