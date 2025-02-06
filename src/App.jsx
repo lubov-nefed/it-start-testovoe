@@ -1,40 +1,58 @@
-import { useEffect } from "react";
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 async function fetchSeminars() {
   try {
-    const response = await fetch("/db.json");
+    const response = await fetch("https://httpstat.us/500");
     if (response.ok) {
-      let data = await response.json();
-      return data.seminars;
+      const result = await response.json();
+      return result.seminars;
     } else {
-      throw Error(
-        `Something went wrong. Response status code: ${response.status}`
-      );
+      throw Error(`Error. Response status code: ${response.status}`);
     }
   } catch (error) {
-    console.log(error);
+    if (!error) {
+      throw Error("Data request error");
+    } else throw error;
   }
 }
 
 function App() {
-  const [seminars, setSeminars] = useState(null);
+  const [seminars, setSeminars] = useState(null); //loading, data, error
+
   useEffect(() => {
     let ignore = false;
-    setSeminars(null);
-    fetchSeminars().then((result) => {
-      if (!ignore) {
-        setSeminars(result);
-      }
-    });
+
+    setSeminars("loading");
+    setTimeout(() => {
+      fetchSeminars()
+        .then((data) => {
+          if (!ignore) {
+            setSeminars(data);
+          }
+        })
+        .catch((error) => {
+          setSeminars("error");
+          console.log(error);
+        });
+    }, 2000);
+
     return () => {
       ignore = true;
     };
   }, []);
-  console.log(seminars);
 
-  return <>App</>;
+  const seminarsList = Array.isArray(seminars)
+    ? seminars.map((seminar) => <li key={seminar.id}>{seminar.title}</li>)
+    : null;
+
+  return (
+    <>
+      {seminars === "loading" && <p>Loading...</p>}
+      {seminarsList && <ul>{seminarsList}</ul>}
+      {seminars === "error" && <p>Sorry, data request error</p>}
+    </>
+  );
 }
 
 export default App;
