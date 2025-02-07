@@ -29,13 +29,20 @@ function App() {
   // и либо отображать состояние (загрузка/ошибка), либо содержать данные, запрошенные с сервера
   const [seminars, setSeminars] = useState(null);
   const [state, setState] = useState("noModal"); //editModal, deleteModal
+  const [activeSeminar, setActiveSeminar] = useState(null);
 
-  const handleEdit = () => {
+  const handleEdit = (seminar) => {
     setState("editModal");
+    setActiveSeminar(seminar);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (seminar) => {
     setState("deleteModal");
+    setActiveSeminar(seminar);
+  };
+
+  const handleCloseModal = () => {
+    setState("noModal");
   };
 
   //Используем useEffect для запроса данных
@@ -75,8 +82,8 @@ function App() {
         <Seminar
           key={seminar.id}
           seminar={seminar}
-          handleEdit={() => handleEdit()}
-          handleDelete={() => handleDelete()}
+          handleEdit={() => handleEdit(seminar)}
+          handleDelete={() => handleDelete(seminar)}
         />
       ))
     : null;
@@ -84,7 +91,11 @@ function App() {
   return (
     <>
       {(state === "editModal" || state === "deleteModal") && (
-        <ModalWindow type={state} />
+        <ModalWindow
+          type={state}
+          activeSeminar={activeSeminar}
+          onClose={() => handleCloseModal()}
+        />
       )}
       {seminars === "loading" && <p>Loading...</p>}
       {seminarsList && <ul className="seminars-list">{seminarsList}</ul>}
