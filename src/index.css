@@ -13,6 +13,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -58,6 +65,13 @@ ul {
   list-style: none;
 }
 
+.seminars-list {  
+  max-width: 744px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
 /* Seminar */
 .seminar-li {
   margin: 16px 0;
@@ -87,6 +101,17 @@ ul {
   border: solid 1px #c6d3ff;
 }
 
+
+/* ModalWindow */
+.modal-window {
+  background-color:rgba(198, 211, 255, 0.75);
+  position: absolute;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
 
 /* Media */
 @media (prefers-color-scheme: light) {

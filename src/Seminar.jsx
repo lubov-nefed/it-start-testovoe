@@ -1,4 +1,4 @@
-export function Seminar({ seminar }) {
+export function Seminar({ seminar, handleEdit, handleDelete }) {
   return (
     <li className="seminar-li">
       <h4 className="seminar-title">{seminar.title}</h4>
@@ -11,13 +11,17 @@ export function Seminar({ seminar }) {
       <img src={seminar.photo} alt={`${seminar.title} фото`} />
       <br />
       <img
-        src={`https://loremflickr.com/700/200?random=${seminar.id}`}
+        src={`https://loremflickr.com/700/300?kitten=${seminar.id}`}
         alt={`Случайное фото с Thecatapi`}
       />
       <br />
       <div className="seminar-buttons-container">
-        <button className="seminar-button">Редактировать</button>
-        <button className="seminar-button">Удалить</button>
+        <button className="seminar-button" onClick={handleEdit}>
+          Редактировать
+        </button>
+        <button className="seminar-button" onClick={handleDelete}>
+          Удалить
+        </button>
       </div>
     </li>
   );

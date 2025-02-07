@@ -1,6 +1,6 @@
-import "./App.css";
 import { useState, useEffect } from "react";
 import { Seminar } from "./Seminar.jsx";
+import { ModalWindow } from "./ModalWindow.jsx";
 
 // Функция для запроса данных о семинарах с сервера
 async function fetchSeminars() {
@@ -28,6 +28,15 @@ function App() {
   //Переменная seminars будет принимать значения: loading/data/error
   // и либо отображать состояние (загрузка/ошибка), либо содержать данные, запрошенные с сервера
   const [seminars, setSeminars] = useState(null);
+  const [state, setState] = useState("noModal"); //editModal, deleteModal
+
+  const handleEdit = () => {
+    setState("editModal");
+  };
+
+  const handleDelete = () => {
+    setState("deleteModal");
+  };
 
   //Используем useEffect для запроса данных
   useEffect(() => {
@@ -62,13 +71,23 @@ function App() {
   }, []); //указываем пустой массив зависимостей, чтобы запрос данных выполнялся только при первом рендере компонента
 
   const seminarsList = Array.isArray(seminars)
-    ? seminars.map((seminar) => <Seminar key={seminar.id} seminar={seminar} />)
+    ? seminars.map((seminar) => (
+        <Seminar
+          key={seminar.id}
+          seminar={seminar}
+          handleEdit={() => handleEdit()}
+          handleDelete={() => handleDelete()}
+        />
+      ))
     : null;
 
   return (
     <>
+      {(state === "editModal" || state === "deleteModal") && (
+        <ModalWindow type={state} />
+      )}
       {seminars === "loading" && <p>Loading...</p>}
-      {seminarsList && <ul>{seminarsList}</ul>}
+      {seminarsList && <ul className="seminars-list">{seminarsList}</ul>}
       {seminars === "error" && <p>Sorry, data request error</p>}
     </>
   );
