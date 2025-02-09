@@ -1,4 +1,4 @@
-export function Seminar({ seminar, handleEdit, handleDelete }) {
+export function Seminar({ seminar, onEdit, onDelete }) {
   return (
     <li className="seminar-li">
       <h4 className="seminar-title">{seminar.title}</h4>
@@ -16,10 +16,10 @@ export function Seminar({ seminar, handleEdit, handleDelete }) {
       />
       <br />
       <div className="seminar-buttons-container">
-        <button className="seminar-button" onClick={handleEdit}>
+        <button className="seminar-button" onClick={onEdit}>
           Редактировать
         </button>
-        <button className="seminar-button" onClick={handleDelete}>
+        <button className="seminar-button" onClick={onDelete}>
           Удалить
         </button>
       </div>

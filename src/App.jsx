@@ -27,11 +27,11 @@ async function fetchSeminars() {
 function App() {
   //Переменная seminars будет принимать значения: loading/data/error
   // и либо отображать состояние (загрузка/ошибка), либо содержать данные, запрошенные с сервера
-  const [seminars, setSeminars] = useState(null);
+  const [seminars, setSeminars] = useState(null); //loading/data/error
   const [state, setState] = useState("noModal"); //editModal, deleteModal
   const [activeSeminar, setActiveSeminar] = useState(null);
 
-  const handleEdit = (seminar) => {
+  const onEdit = (seminar) => {
     setState("editModal");
     setActiveSeminar(seminar);
     window.scrollTo({
@@ -40,7 +40,7 @@ function App() {
     });
   };
 
-  const handleDelete = (seminar) => {
+  const onDelete = (seminar) => {
     setState("deleteModal");
     setActiveSeminar(seminar);
     window.scrollTo({
@@ -51,6 +51,51 @@ function App() {
 
   const handleCloseModal = () => {
     setState("noModal");
+  };
+
+  const handleEdit = (e) => {
+    const form = e.target.parentElement;
+    const formData = new FormData(form);
+    const seminarId = formData.get("id");
+    const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
+    try {
+      fetch(`http://localhost:3001/seminars/${seminarId}`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: formJson,
+      }).then((response) => {
+        console.log(response);
+        if (!response.ok) {
+          throw new Error(`Respose error. Status code: ${response.status}`);
+        }
+        return response.json();
+      });
+    } catch (error) {
+      if (!error) {
+        throw Error("Data request error");
+      }
+      console.log(error);
+    }
+  };
+
+  const handleDelete = (seminarId) => {
+    console.log(seminarId);
+    try {
+      fetch(`http://localhost:3001/seminars/${seminarId}`, {
+        method: "DELETE",
+      }).then((response) => {
+        console.log(response);
+        if (!response.ok) {
+          throw new Error(`Respose error. Status code: ${response.status}`);
+        }
+        return response.json();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //Используем useEffect для запроса данных
@@ -90,8 +135,8 @@ function App() {
         <Seminar
           key={seminar.id}
           seminar={seminar}
-          handleEdit={() => handleEdit(seminar)}
-          handleDelete={() => handleDelete(seminar)}
+          onEdit={() => onEdit(seminar)}
+          onDelete={() => onDelete(seminar)}
         />
       ))
     : null;
@@ -103,6 +148,8 @@ function App() {
           type={state}
           activeSeminar={activeSeminar}
           onClose={() => handleCloseModal()}
+          handleEdit={(e) => handleEdit(e)}
+          handleDelete={(seminarId) => handleDelete(seminarId)}
         />
       )}
       {seminars === "loading" && <p>Loading...</p>}

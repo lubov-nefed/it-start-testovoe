@@ -1,32 +1,4 @@
-const handleEdit = (e) => {
-  const form = e.target.parentElement;
-  const formData = new FormData(form);
-  const seminarId = formData.get("id");
-  const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
-  try {
-    fetch(`http://localhost:3001/seminars/${seminarId}`, {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: formJson,
-    }).then((response) => {
-      console.log(response);
-      if (!response.ok) {
-        throw new Error(`Respose error. Status code: ${response.status}`);
-      }
-      return response.json();
-    });
-  } catch (error) {
-    if (!error) {
-      throw Error("Data request error");
-    }
-    console.log(error);
-  }
-};
-
-function EditForm({ seminar }) {
+function EditForm({ seminar, handleEdit }) {
   const keys = Object.keys(seminar);
   const id = keys[0];
   const visibleKeys = keys.slice(1);
@@ -66,23 +38,7 @@ function EditForm({ seminar }) {
   );
 }
 
-const handleDelete = (seminarId) => {
-  try {
-    fetch(`http://localhost:3001/seminars/${seminarId}`, {
-      method: "DELETE",
-    }).then((response) => {
-      console.log(response);
-      if (!response.ok) {
-        throw new Error(`Respose error. Status code: ${response.status}`);
-      }
-      return response.json();
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-function DeleModal({ seminar }) {
+function DeleModal({ seminar, handleDelete }) {
   return (
     <div>
       <p>Удалить семинар &quot;{seminar.title}&quot;?</p>
@@ -91,12 +47,22 @@ function DeleModal({ seminar }) {
   );
 }
 
-export function ModalWindow({ type, activeSeminar, onClose }) {
+export function ModalWindow({
+  type,
+  activeSeminar,
+  onClose,
+  handleEdit,
+  handleDelete,
+}) {
   return (
     <div className="modal-window">
       <br />
-      {type === "editModal" && <EditForm seminar={activeSeminar} />}
-      {type === "deleteModal" && <DeleModal seminar={activeSeminar} />}
+      {type === "editModal" && (
+        <EditForm seminar={activeSeminar} handleEdit={handleEdit} />
+      )}
+      {type === "deleteModal" && (
+        <DeleModal seminar={activeSeminar} handleDelete={handleDelete} />
+      )}
       <button className="modal-close-btn" onClick={onClose}>
         Отмена
       </button>
