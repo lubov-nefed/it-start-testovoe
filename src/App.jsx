@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Seminar } from "./Seminar.jsx";
-import { ModalWindow } from "./ModalWindow.jsx";
+import { ModalWindow } from "./ModalWindows/ModalWindow.jsx";
 
 // Функция для запроса данных о семинарах с сервера
 async function fetchSeminars() {
