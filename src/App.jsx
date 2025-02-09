@@ -34,11 +34,19 @@ function App() {
   const handleEdit = (seminar) => {
     setState("editModal");
     setActiveSeminar(seminar);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleDelete = (seminar) => {
     setState("deleteModal");
     setActiveSeminar(seminar);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleCloseModal = () => {

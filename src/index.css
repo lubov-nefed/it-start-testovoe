@@ -113,6 +113,24 @@ ul {
   left: 0;
 }
 
+.edit-label {
+  display: block;
+}
+
+.edit-input {
+  padding: 16px;
+  margin: 8px;
+  width: 400px;
+}
+
+.edit-submit-btn {
+  margin: 16px 0;
+}
+
+.modal-close-btn {
+  margin: 16px 0;
+}
+
 /* Media */
 @media (prefers-color-scheme: light) {
   :root {
