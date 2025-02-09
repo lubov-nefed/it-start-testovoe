@@ -1,38 +1,19 @@
 import { useState, useEffect } from "react";
 import { Seminar } from "./Seminar.jsx";
 import { ModalWindow } from "./ModalWindows/ModalWindow.jsx";
-
-// Функция для запроса данных о семинарах с сервера
-async function fetchSeminars() {
-  try {
-    //Запрашиваем данные
-    const response = await fetch("http://localhost:3001/seminars");
-    //Если ответ получен, возвращаем данные
-    if (response.ok) {
-      const result = await response.json();
-      return result;
-      //Если произошла ошибка пробрасываем ее дальше для отображения в консоли/на странице
-    } else {
-      throw Error(`Error. Response status code: ${response.status}`);
-    }
-  } catch (error) {
-    if (!error) {
-      //Если ошибку отловить не удалось, то выбрасываем ошибку запроса данных
-      throw Error("Data request error");
-      //Пробрасываем ошибку дальше,  для отображения ее в консоли/на странице
-    } else throw error;
-  }
-}
+import { fetchSeminars } from "./fetchSeminars.js";
 
 function App() {
   //Переменная seminars будет принимать значения: loading/data/error
   // и либо отображать состояние (загрузка/ошибка), либо содержать данные, запрошенные с сервера
   const [seminars, setSeminars] = useState(null); //loading/data/error
-  const [state, setState] = useState("noModal"); //editModal, deleteModal
+  const [uiState, setUiState] = useState("noModal"); //editModal, deleteModal
   const [activeSeminar, setActiveSeminar] = useState(null);
+  const [dataMutationToggle, setDataMutationToggle] = useState("off"); //on
 
+  //Меняем состояние интерфейса, вызываем модальное окно редактирования
   const onEdit = (seminar) => {
-    setState("editModal");
+    setUiState("editModal");
     setActiveSeminar(seminar);
     window.scrollTo({
       top: 0,
@@ -40,8 +21,9 @@ function App() {
     });
   };
 
+  //Меняем состояние интерфейса, вызываем модальное окно удаления
   const onDelete = (seminar) => {
-    setState("deleteModal");
+    setUiState("deleteModal");
     setActiveSeminar(seminar);
     window.scrollTo({
       top: 0,
@@ -49,10 +31,12 @@ function App() {
     });
   };
 
+  //Закрываем модальное окно
   const handleCloseModal = () => {
-    setState("noModal");
+    setUiState("noModal");
   };
 
+  //Отправляем запрос на сервер для редактирования семинара
   const handleEdit = (e) => {
     const form = e.target.parentElement;
     const formData = new FormData(form);
@@ -67,10 +51,13 @@ function App() {
         },
         body: formJson,
       }).then((response) => {
-        console.log(response);
         if (!response.ok) {
           throw new Error(`Respose error. Status code: ${response.status}`);
         }
+        dataMutationToggle === "on"
+          ? setDataMutationToggle("off")
+          : setDataMutationToggle("on");
+        handleCloseModal();
         return response.json();
       });
     } catch (error) {
@@ -81,16 +68,19 @@ function App() {
     }
   };
 
+  //Отправляем запрос на сервер для удаления семинара
   const handleDelete = (seminarId) => {
-    console.log(seminarId);
     try {
       fetch(`http://localhost:3001/seminars/${seminarId}`, {
         method: "DELETE",
       }).then((response) => {
-        console.log(response);
         if (!response.ok) {
           throw new Error(`Respose error. Status code: ${response.status}`);
         }
+        dataMutationToggle === "on"
+          ? setDataMutationToggle("off")
+          : setDataMutationToggle("on");
+        handleCloseModal();
         return response.json();
       });
     } catch (error) {
@@ -98,14 +88,14 @@ function App() {
     }
   };
 
-  //Используем useEffect для запроса данных
+  //Используем useEffect для получения данных о семинарах
   useEffect(() => {
     let ignore = false;
 
     //Устанавливаем состояние "загружается" для отображения на странице
     setSeminars("loading");
-    //Здесь добавим искуственную задержку чтобы видеть индикатор загрузки
-    //в процессе разработки, перед продакшеном нужно убрать
+    //Здесь добавим искуственную задержку setTimeout чтобы видеть индикатор загрузки в процессе разработки,
+    // перед продакшеном нужно убрать
     /* === */
     //TODO: Убрать setTimeout перед продакшеном
     /* === */
@@ -123,12 +113,17 @@ function App() {
           setSeminars("error");
           console.log(error);
         });
-    }, 1500);
+    }, 1200);
 
     return () => {
       ignore = true;
     };
-  }, []); //указываем пустой массив зависимостей, чтобы запрос данных выполнялся только при первом рендере компонента
+  }, [
+    dataMutationToggle,
+  ]); /* указываем зависмость от изменения данных на сервере,
+  чтобы запрос данных выполнялся в ответ на действия пользователя, 
+  и интерфейс менялся
+ */
 
   const seminarsList = Array.isArray(seminars)
     ? seminars.map((seminar) => (
@@ -143,9 +138,9 @@ function App() {
 
   return (
     <>
-      {(state === "editModal" || state === "deleteModal") && (
+      {(uiState === "editModal" || uiState === "deleteModal") && (
         <ModalWindow
-          type={state}
+          type={uiState}
           activeSeminar={activeSeminar}
           onClose={() => handleCloseModal()}
           handleEdit={(e) => handleEdit(e)}
