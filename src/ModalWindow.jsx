@@ -2,14 +2,15 @@ const handleEdit = (e) => {
   const form = e.target.parentElement;
   const formData = new FormData(form);
   const seminarId = formData.get("id");
+  const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
   try {
-    fetch(`/db.json/seminars/${seminarId}`, {
+    fetch(`http://localhost:3001/seminars/${seminarId}`, {
       method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: formJson,
     }).then((response) => {
       console.log(response);
       if (!response.ok) {
@@ -18,6 +19,9 @@ const handleEdit = (e) => {
       return response.json();
     });
   } catch (error) {
+    if (!error) {
+      throw Error("Data request error");
+    }
     console.log(error);
   }
 };
@@ -64,15 +68,15 @@ function EditForm({ seminar }) {
 
 const handleDelete = (seminarId) => {
   try {
-    fetch(`/db.json/seminars/${seminarId}`, { method: "DELETE" }).then(
-      (response) => {
-        console.log(response);
-        if (!response.ok) {
-          throw new Error(`Respose error. Status code: ${response.status}`);
-        }
-        return response.json();
+    fetch(`http://localhost:3001/seminars/${seminarId}`, {
+      method: "DELETE",
+    }).then((response) => {
+      console.log(response);
+      if (!response.ok) {
+        throw new Error(`Respose error. Status code: ${response.status}`);
       }
-    );
+      return response.json();
+    });
   } catch (error) {
     console.log(error);
   }

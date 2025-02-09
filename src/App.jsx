@@ -6,11 +6,11 @@ import { ModalWindow } from "./ModalWindow.jsx";
 async function fetchSeminars() {
   try {
     //Запрашиваем данные
-    const response = await fetch("/db.json");
+    const response = await fetch("http://localhost:3001/seminars");
     //Если ответ получен, возвращаем данные
     if (response.ok) {
       const result = await response.json();
-      return result.seminars;
+      return result;
       //Если произошла ошибка пробрасываем ее дальше для отображения в консоли/на странице
     } else {
       throw Error(`Error. Response status code: ${response.status}`);
